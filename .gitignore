@@ -1,0 +1,14 @@
+# Database config (contains local credentials)
+includes/db.php
+
+# XAMPP / system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+
+# Logs
+*.log
