@@ -3,7 +3,8 @@ FROM php:8.2-apache
 # Install PHP extensions and switch Apache to mpm_prefork (required for mod_php)
 # while enabling mod_rewrite.
 RUN docker-php-ext-install mysqli pdo pdo_mysql \
-    && a2dismod mpm_event \
+    && a2dismod mpm_event || true \
+    && rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf \
     && a2enmod mpm_prefork \
     && a2enmod rewrite
 
