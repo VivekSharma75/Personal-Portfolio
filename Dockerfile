@@ -21,16 +21,8 @@ RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type f -exec chmod 644 {} \; \
     && find /var/www/html -type d -exec chmod 755 {} \;
 
-# Generate startup script directly in the container (guaranteed LF line endings)
-# Makes Apache listen on Railway's dynamic $PORT (falls back to 80 locally)
-RUN printf '#!/bin/sh\n\
-APP_PORT="${PORT:-80}"\n\
-sed -i "s/Listen 80/Listen $APP_PORT/g" /etc/apache2/ports.conf\n\
-sed -i "s/<VirtualHost \\*:80>/<VirtualHost *:$APP_PORT>/g" /etc/apache2/sites-available/000-default.conf\n\
-exec apache2-foreground\n' \
-    > /usr/local/bin/start.sh \
-    && chmod +x /usr/local/bin/start.sh
-
 EXPOSE 80
 
-CMD ["/usr/local/bin/start.sh"]
+# Use exec-form with sh -c so $PORT is expanded at container RUNTIME (not build time).
+# Sed updates ports.conf and the VirtualHost so Apache listens on Railway's assigned port.
+CMD ["sh", "-c", "sed -i \"s/Listen 80/Listen $PORT/\" /etc/apache2/ports.conf && sed -i \"s/:80>/:$PORT>/\" /etc/apache2/sites-available/000-default.conf && exec apache2-foreground"]
