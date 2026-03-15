@@ -1,7 +1,11 @@
 FROM php:8.2-apache
 
-# Install PHP extensions and enable mod_rewrite
-RUN docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite
+# Install PHP extensions and switch Apache to mpm_prefork (required for mod_php)
+# while enabling mod_rewrite.
+RUN docker-php-ext-install mysqli pdo pdo_mysql \
+    && a2dismod mpm_event \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
 
 # Allow .htaccess overrides
 RUN printf '<Directory /var/www/html>\n    AllowOverride All\n    Options -Indexes +FollowSymLinks\n    Require all granted\n</Directory>\n' \
