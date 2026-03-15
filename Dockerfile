@@ -23,6 +23,6 @@ RUN chown -R www-data:www-data /var/www/html \
 
 EXPOSE 80
 
-# Use exec-form with sh -c so $PORT is expanded at container RUNTIME (not build time).
-# Sed updates ports.conf and the VirtualHost so Apache listens on Railway's assigned port.
-CMD ["sh", "-c", "sed -i \"s/Listen 80/Listen $PORT/\" /etc/apache2/ports.conf && sed -i \"s/:80>/:$PORT>/\" /etc/apache2/sites-available/000-default.conf && exec apache2-foreground"]
+# Apache always listens on 80. We set PORT=80 in Railway Variables so
+# Railway healthchecks the correct port. No runtime sed manipulation needed.
+CMD ["apache2-foreground"]
