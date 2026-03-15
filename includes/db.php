@@ -18,7 +18,13 @@ if ($isLocal) {
 $conn = new mysqli($dbHost, $dbUser, $dbPass, $dbName);
 
 if ($conn->connect_error) {
-    die('Database connection failed: ' . $conn->connect_error);
+    // Show a friendly message instead of crashing the whole page
+    http_response_code(503);
+    echo '<!DOCTYPE html><html><body style="font-family:sans-serif;text-align:center;padding:4rem">'
+       . '<h2>Database unavailable</h2>'
+       . '<p>Please check the DB environment variables in Railway.</p>'
+       . '</body></html>';
+    exit;
 }
 
 $conn->set_charset("utf8mb4");
